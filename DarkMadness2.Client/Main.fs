@@ -10,8 +10,7 @@ let communicator = DarkMadness2.NetworkCommunication.NetworkCommunicator ()
 let distance (x1, y1) (x2, y2) = abs (x1 - x2) + abs (y1 - y2)
 let (+) (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
 let split (separator : char array) (str : string) = str.Split(separator, System.StringSplitOptions.RemoveEmptyEntries)
-let makePair (arr : 'a array) = (arr.[0], arr.[1])
-let parsePair (str : string) = str.Trim [|'('; ')'|] |> split [|','; ' '|]  |> Array.map int |> makePair
+let parsePair (str : string) = str.Trim [|'('; ')'|] |> split [|','; ' '|]  |> Array.map int |> fun arr -> (arr.[0], arr.[1])
 
 let processKeyPress (key : System.ConsoleKey) =
     putChar ' ' charPosition
@@ -22,7 +21,7 @@ let processKeyPress (key : System.ConsoleKey) =
                 | System.ConsoleKey.RightArrow -> (1, 0)
                 | _ -> (0, 0)
     let correctCoords (x, y) =
-        x >= 0 && x <= maxX () && y >= 0 && y <= maxY ()
+        x >= 0 && x < maxX () && y >= 0 && y <= maxY ()
     let newCoords = charPosition + delta
     if correctCoords newCoords then
         charPosition <- newCoords
@@ -52,12 +51,10 @@ let processEvent event =
 
 let eventSource : Event seq = seq {
     while true do
-        if System.Console.KeyAvailable then 
-            yield ClientEvent (System.Console.ReadKey true).Key
-        else if communicator.HasIncomingMessages () then
+        if communicator.HasIncomingMessages () then
             yield ServerEvent (parsePair <| communicator.Read ())
-        else 
-            System.Threading.Thread.Sleep 100
+        else if System.Console.KeyAvailable then 
+            yield ClientEvent (System.Console.ReadKey true).Key
 }
 
 eventSource
