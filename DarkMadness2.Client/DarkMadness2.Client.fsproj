@@ -8,7 +8,7 @@
     <ProjectGuid>{36af659f-d47e-45b7-b27c-5112c2867731}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>DarkMadness2.Main</RootNamespace>
-    <AssemblyName>DarkMadness2.Main</AssemblyName>
+    <AssemblyName>DarkMadness2.Client</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <Name>DarkMadness2.Client</Name>
@@ -43,7 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Console.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="NetworkCommunicator.fs" />
+    <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
