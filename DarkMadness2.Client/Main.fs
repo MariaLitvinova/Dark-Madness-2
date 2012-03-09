@@ -21,7 +21,11 @@ let processKeyPress (key : System.ConsoleKey) =
                 | System.ConsoleKey.LeftArrow -> (-1, 0)
                 | System.ConsoleKey.RightArrow -> (1, 0)
                 | _ -> (0, 0)
-    charPosition <- charPosition + delta
+    let correctCoords (x, y) =
+        x >= 0 && x <= maxX () && y >= 0 && y <= maxY ()
+    let newCoords = charPosition + delta
+    if correctCoords newCoords then
+        charPosition <- newCoords
     putChar '@' charPosition
     communicator.Send <| charPosition.ToString ()
 

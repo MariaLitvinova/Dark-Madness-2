@@ -1,7 +1,6 @@
 ﻿namespace DarkMadness2.NetworkCommunication
 
 type NetworkCommunicator () =
-    do printfn "Establishing connection"
     let client = new System.Net.Sockets.TcpClient ("127.0.0.1", 8181)
     let stream = client.GetStream ()
     let writer = new System.IO.StreamWriter (stream)
@@ -11,7 +10,7 @@ type NetworkCommunicator () =
         if not client.Connected then 
             waitForConnection ()
         else
-            printfn "Connection established"
+            System.Threading.Thread.Sleep 100
     do waitForConnection ()
 
     member this.Send (str : string) = writer.WriteLine str

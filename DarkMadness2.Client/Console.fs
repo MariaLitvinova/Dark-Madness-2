@@ -7,6 +7,8 @@ let setWindowSize w h = Console.SetWindowSize (w, h)
 let maximizeWindow () = 
     setWindowSize Console.LargestWindowWidth Console.LargestWindowHeight
     Console.SetBufferSize (Console.LargestWindowWidth, Console.LargestWindowHeight)
+let maxX () = Console.BufferWidth - 1
+let maxY () = Console.BufferHeight - 1
 
 // Cursor-related functions
 let setCursorPosition x y = Console.SetCursorPosition (x, y)
