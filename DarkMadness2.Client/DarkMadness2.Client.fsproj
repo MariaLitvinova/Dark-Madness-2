@@ -43,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Console.fs" />
-    <Compile Include="NetworkCommunicator.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>

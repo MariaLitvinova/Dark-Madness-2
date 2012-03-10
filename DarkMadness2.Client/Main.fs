@@ -8,7 +8,7 @@ let random = System.Random ()
 let mutable charPosition = (random.Next 10, random.Next 10)
 let mutable otherCharPosition = (0, 0)
 let mutable clientId = -1
-let communicator = DarkMadness2.NetworkCommunication.NetworkCommunicator ()
+let communicator = Client ("127.0.0.1", 8181)
 
 let (+) (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
 

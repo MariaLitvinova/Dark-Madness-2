@@ -2,7 +2,7 @@
 
 open System.Net.Sockets
 
-type Server(port) =
+type Server (port) =
     let server = TcpListener (System.Net.IPAddress [|127uy; 0uy; 0uy; 1uy|], port)
     let mutable connectedClients : TcpClient list = []
 
