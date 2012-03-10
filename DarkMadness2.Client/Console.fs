@@ -1,4 +1,4 @@
-﻿module DarkMadness2.Console
+﻿module DarkMadness2.Client.Console
 
 open System
 

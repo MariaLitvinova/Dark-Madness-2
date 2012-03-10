@@ -1,19 +1,20 @@
 ﻿module Main
 
-open DarkMadness2.Console
+open DarkMadness2.Client.Console
+open DarkMadness2.NetworkCommunication
+open DarkMadness2.NetworkCommunication.Serializer
 
 let random = System.Random ()
 let mutable charPosition = (random.Next 10, random.Next 10)
 let mutable otherCharPosition = (0, 0)
+let mutable clientId = -1
 let communicator = DarkMadness2.NetworkCommunication.NetworkCommunicator ()
 
-let distance (x1, y1) (x2, y2) = abs (x1 - x2) + abs (y1 - y2)
 let (+) (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
-let split (separator : char array) (str : string) = str.Split(separator, System.StringSplitOptions.RemoveEmptyEntries)
-let parsePair (str : string) = str.Trim [|'('; ')'|] |> split [|','; ' '|]  |> Array.map int |> fun arr -> (arr.[0], arr.[1])
 
 let processKeyPress (key : System.ConsoleKey) =
-    putChar ' ' charPosition
+    if otherCharPosition <> charPosition then
+        putChar ' ' charPosition
     let delta = match key with
                 | System.ConsoleKey.UpArrow -> (0, -1)
                 | System.ConsoleKey.DownArrow -> (0, 1)
@@ -26,40 +27,59 @@ let processKeyPress (key : System.ConsoleKey) =
     if correctCoords newCoords then
         charPosition <- newCoords
     putChar '@' charPosition
-    communicator.Send <| charPosition.ToString ()
+    CharacterMoveRequest charPosition |> serialize |> communicator.Send
 
 let processNewCoords coords = 
-    if distance coords charPosition > 1 then 
+    if otherCharPosition <> charPosition then
         putChar ' ' otherCharPosition
-        otherCharPosition <- coords
-        putChar '@' otherCharPosition
+    otherCharPosition <- coords
+    putChar '@' otherCharPosition
 
-maximizeWindow ()
+// maximizeWindow ()
 hideCursor ()
+
+// Connecting to server...
+communicator.Send <| serialize ConnectionRequest
+let response = communicator.Read () |> deserialize
+match response with 
+| ConnectionResponse id -> clientId <- id
+| _ -> failwith "Connection failed"
+
+System.Console.Title <- sprintf "Dark Madness 2 {Connected, client id = %d}" clientId
+
+// Done.
 putChar '@' charPosition
 
-communicator.Send <| charPosition.ToString ()
+CharacterMoveRequest charPosition |> serialize |> communicator.Send
 
 type Event = 
 | ClientEvent of System.ConsoleKey
-| ServerEvent of int * int
+| ServerEvent of Message
 
 let processEvent event =
     match event with
     | ClientEvent key -> processKeyPress key
-    | ServerEvent (x, y) -> processNewCoords (x, y)
+    | ServerEvent msg -> 
+        match msg with 
+        | CharacterPositionUpdate (id, x, y) ->
+            if id <> clientId then
+                processNewCoords (x, y)
+        | _ -> ()
+
 
 let eventSource : Event seq = seq {
     while true do
         if communicator.HasIncomingMessages () then
-            yield ServerEvent (parsePair <| communicator.Read ())
+            yield ServerEvent (communicator.Read () |> deserialize)
         else if System.Console.KeyAvailable then 
             yield ClientEvent (System.Console.ReadKey true).Key
 }
 
 eventSource
-    |> Seq.takeWhile (fun event -> match event with
-                                   | ClientEvent key -> key <> System.ConsoleKey.Escape
-                                   | _ -> true
-                     )
+    |> Seq.takeWhile (
+        fun event -> 
+            match event with
+            | ClientEvent key -> key <> System.ConsoleKey.Escape
+            | _ -> true
+        )
     |> Seq.iter processEvent

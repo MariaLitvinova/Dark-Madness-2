@@ -46,6 +46,13 @@
     <Compile Include="NetworkCommunicator.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DarkMadness2.NetworkCommunication\DarkMadness2.NetworkCommunication.fsproj">
+      <Name>DarkMadness2.NetworkCommunication</Name>
+      <Project>{2c8fa004-c687-41fa-8524-40f30b3d39a2}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

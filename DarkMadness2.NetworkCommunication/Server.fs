@@ -15,10 +15,10 @@ type Server(port) =
         let rec processClientMessages () =
             try
                 let message = reader.ReadLine ()
-                printfn "%d : %s" (List.findIndex ((=) client) connectedClients) message
+                printfn "%A : %s" (client.GetHashCode ()) message
                 newMessage.Trigger (client, message)
             with
-                _ -> printfn "Client %d disconnected" (List.findIndex ((=) client) connectedClients)
+                _ -> printfn "Client %A disconnected" <| client.GetHashCode ()
                      connectedClients <- List.filter ((<>) client) connectedClients
                      clientDisconnected.Trigger client
             if List.exists ((=) client) connectedClients then
@@ -27,7 +27,7 @@ type Server(port) =
 
     let launchClientCommunicationProcess client =
         connectedClients <- client :: connectedClients
-        printfn "Client connected"
+        printfn "Client %A connected" <| client.GetHashCode ()
         clientConnected.Trigger client
         let communication () = clientCommunication client
         let thread = System.Threading.Thread (System.Threading.ThreadStart communication)
@@ -46,13 +46,16 @@ type Server(port) =
 
     member this.ClientDisconnected = clientDisconnected.Publish
 
+    member this.SendTo (client : obj) (message : string) =
+        printfn "Sending to %A message %s" (client.GetHashCode ()) message
+        let client = client :?> TcpClient
+        let writer = new System.IO.StreamWriter (client.GetStream ())
+        writer.WriteLine message
+        writer.Flush ()        
+
     member this.SendToAllClients (message : string) =
-        connectedClients |> List.iteri (fun i client -> 
-                let writer = new System.IO.StreamWriter (client.GetStream ())
-                printfn "Sending %s to client %d" message i
-                writer.WriteLine message
-                writer.Flush ()
-            )
+        printfn "Sending to all clients: %s" message
+        connectedClients |> List.iter (fun client -> this.SendTo client message)
 
     member this.Start () =
         server.Start ()
