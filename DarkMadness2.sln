@@ -7,6 +7,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DarkMadness2.Server", "Dark
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DarkMadness2.NetworkCommunication", "DarkMadness2.NetworkCommunication\DarkMadness2.NetworkCommunication.fsproj", "{2C8FA004-C687-41FA-8524-40F30B3D39A2}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DarkMadness2.Core", "DarkMadness2.Core\DarkMadness2.Core.fsproj", "{B6381373-9DC2-4F14-B586-3931CC224E00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,16 @@ Global
 		{2C8FA004-C687-41FA-8524-40F30B3D39A2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2C8FA004-C687-41FA-8524-40F30B3D39A2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2C8FA004-C687-41FA-8524-40F30B3D39A2}.Release|x86.ActiveCfg = Release|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B6381373-9DC2-4F14-B586-3931CC224E00}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
