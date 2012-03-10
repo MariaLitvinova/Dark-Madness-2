@@ -15,8 +15,8 @@ type Client (host, port) =
 
     member this.Send (str : string) = writer.WriteLine str
 
-    interface DarkMadness2.Core.IEventSource with
+    interface DarkMadness2.Core.IEventSource<string> with
 
         member this.HasNext () = stream.DataAvailable
 
-        member this.Next () = reader.ReadLine () :> obj
+        member this.Next () = reader.ReadLine ()

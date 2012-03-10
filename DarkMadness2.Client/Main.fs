@@ -41,7 +41,7 @@ hideCursor ()
 
 // Connecting to server...
 communicator.Send <| serialize ConnectionRequest
-let response = (communicator :> IEventSource).Next () :?> string |> deserialize
+let response = (communicator :> IEventSource<string>).Next () |> deserialize
 match response with 
 | ConnectionResponse id -> clientId <- id
 | _ -> failwith "Connection failed"
@@ -68,26 +68,22 @@ let processEvent event =
         | _ -> ()
 
 type ConsoleEventSource () =
-    interface IEventSource with
+    interface IEventSource<System.ConsoleKeyInfo> with
         member this.HasNext () = System.Console.KeyAvailable
-        member this.Next () = System.Console.ReadKey true :> obj
+        member this.Next () = System.Console.ReadKey true
 
 let eventSource = 
-    EventSourceUtils.combine communicator (ConsoleEventSource ())
+    EventSourceUtils.combine communicator (ConsoleEventSource ()) (
+        function
+        | Choice1Of2 messageFromServer -> ServerEvent (messageFromServer |> deserialize)
+        | Choice2Of2 keyInfo -> ClientEvent keyInfo.Key
+    )
     |> EventSourceUtils.eventsSource
-    |> Seq.map (
-            fun event ->
-                match event with 
-                | :? System.ConsoleKeyInfo as keyInfo -> ClientEvent keyInfo.Key
-                | :? string as messageFromServer -> ServerEvent (messageFromServer |> deserialize)
-                | _ -> failwith "Unknown event"
-        )
 
 eventSource
     |> Seq.takeWhile (
-        fun event -> 
-            match event with
-            | ClientEvent key -> key <> System.ConsoleKey.Escape
-            | _ -> true
+        function 
+        | ClientEvent key -> key <> System.ConsoleKey.Escape
+        | _ -> true
         )
     |> Seq.iter processEvent

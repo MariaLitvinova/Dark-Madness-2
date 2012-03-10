@@ -1,6 +1,6 @@
 ﻿namespace DarkMadness2.Core
 
-type IEventSource =
+type IEventSource<'a> =
     abstract HasNext : unit -> bool
-    abstract Next : unit -> obj
+    abstract Next : unit -> 'a
         
