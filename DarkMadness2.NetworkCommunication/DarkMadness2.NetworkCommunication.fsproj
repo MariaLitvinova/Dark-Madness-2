@@ -2,18 +2,17 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0af3ea44-c4fb-49be-959e-78c0a913b33d}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>DarkMadness2.Server</RootNamespace>
-    <AssemblyName>DarkMadness2.Server</AssemblyName>
+    <ProjectGuid>{2c8fa004-c687-41fa-8524-40f30b3d39a2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>DarkMadness2.NetworkCommunication</RootNamespace>
+    <AssemblyName>DarkMadness2.NetworkCommunication</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-    <Name>DarkMadness2.Server</Name>
+    <Name>DarkMadness2.NetworkCommunication</Name>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,18 +20,16 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\DarkMadness2.Server.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\DarkMadness2.NetworkCommunication.XML</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\DarkMadness2.Server.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DarkMadness2.NetworkCommunication.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -42,14 +39,9 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DarkMadness2.NetworkCommunication\DarkMadness2.NetworkCommunication.fsproj">
-      <Name>DarkMadness2.NetworkCommunication</Name>
-      <Project>{2c8fa004-c687-41fa-8524-40f30b3d39a2}</Project>
-      <Private>True</Private>
-    </ProjectReference>
+    <Compile Include="DataTransferObjects.fs" />
+    <Compile Include="Serializer.fs" />
+    <Compile Include="Server.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
