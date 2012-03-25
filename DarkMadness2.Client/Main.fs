@@ -4,6 +4,7 @@ open DarkMadness2.Client.Console
 open DarkMadness2.NetworkCommunication
 open DarkMadness2.NetworkCommunication.Serializer
 open DarkMadness2.Core
+open DarkMadness2.Core.EventSource.EventSourceUtils
 
 let random = System.Random ()
 let mutable charPosition = (random.Next 10, random.Next 10)
@@ -41,7 +42,7 @@ hideCursor ()
 
 // Connecting to server...
 communicator.Send <| serialize ConnectionRequest
-let response = (communicator :> IEventSource<string>).Next () |> deserialize
+let response = receive communicator |> deserialize
 match response with 
 | ConnectionResponse id -> clientId <- id
 | _ -> failwith "Connection failed"
@@ -67,23 +68,20 @@ let processEvent event =
                 processNewCoords (x, y)
         | _ -> ()
 
-type ConsoleEventSource () =
-    interface IEventSource<System.ConsoleKeyInfo> with
-        member this.HasNext () = System.Console.KeyAvailable
-        member this.Next () = System.Console.ReadKey true
+let consoleEventSource = DarkMadness2.Core.EventSource.SyncEventSourceWrapper (fun () -> System.Console.ReadKey true) 
 
 let eventSource = 
-    EventSourceUtils.combine communicator (ConsoleEventSource ()) (
+    combine (event communicator) (event consoleEventSource) (
         function
         | Choice1Of2 messageFromServer -> ServerEvent (messageFromServer |> deserialize)
         | Choice2Of2 keyInfo -> ClientEvent keyInfo.Key
     )
-    |> EventSourceUtils.eventsSource
 
-eventSource
-    |> Seq.takeWhile (
+Event.add processEvent eventSource
+
+eventSource 
+    |> listenUntil (
         function 
-        | ClientEvent key -> key <> System.ConsoleKey.Escape
-        | _ -> true
+        | ClientEvent key -> key =System.ConsoleKey.Escape
+        | _ -> false
         )
-    |> Seq.iter processEvent

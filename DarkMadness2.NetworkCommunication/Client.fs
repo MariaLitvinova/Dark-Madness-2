@@ -12,11 +12,11 @@ type Client (host, port) =
         else
             System.Threading.Thread.Sleep 100
     do waitForConnection ()
+    let eventSource = 
+        DarkMadness2.Core.EventSource.SyncEventSourceWrapper (fun () -> reader.ReadLine ()) 
 
     member this.Send (str : string) = writer.WriteLine str
 
-    interface DarkMadness2.Core.IEventSource<string> with
-
-        member this.HasNext () = stream.DataAvailable
-
-        member this.Next () = reader.ReadLine ()
+    interface DarkMadness2.Core.EventSource.IEventSource<string> with
+        
+        member this.Event = DarkMadness2.Core.EventSource.EventSourceUtils.event eventSource
