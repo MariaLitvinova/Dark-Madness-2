@@ -5,6 +5,7 @@ open DarkMadness2.NetworkCommunication
 open DarkMadness2.NetworkCommunication.Serializer
 open DarkMadness2.Core
 open DarkMadness2.Core.EventSource.EventSourceUtils
+open DarkMadness2.Core.EventProcessing
 
 let random = System.Random ()
 let mutable charPosition = (random.Next 10, random.Next 10)
@@ -80,34 +81,5 @@ let eventSource =
         | Choice1Of2 messageFromServer -> ServerEvent (messageFromServer |> deserialize)
         | Choice2Of2 keyInfo -> ClientEvent keyInfo.Key
     )
-
-type Locker () =
-    let autoResetEvent = new System.Threading.AutoResetEvent false
-    
-    member this.Down () =
-        autoResetEvent.Set () |> ignore
-
-    member this.Wait () =
-        autoResetEvent.WaitOne () |> ignore
-
-type EventDispatcher<'a> (locker : Locker) =
-    let eventBuffer = System.Collections.Generic.Queue<_> ()
-
-    member this.Listener event = 
-        eventBuffer.Enqueue event
-        locker.Down ()
-
-    member this.GetEvent () = eventBuffer.Dequeue ()
-
-let eventLoop (handleEvent : 'a -> bool) (event : IEvent<'a>) =
-    let locker = Locker ()
-    let dispatcher = EventDispatcher locker
-    event.Add <| dispatcher.Listener
-    let rec doLoop () =
-        locker.Wait ()
-        let event = dispatcher.GetEvent ()
-        if handleEvent event then
-            doLoop ()
-    doLoop ()
 
 eventSource |> eventLoop processEvent
