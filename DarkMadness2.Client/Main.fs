@@ -60,13 +60,17 @@ type Event =
 
 let processEvent event =
     match event with
-    | ClientEvent key -> processKeyPress key
+    | ClientEvent System.ConsoleKey.Escape -> false
+    | ClientEvent key -> 
+        processKeyPress key
+        true
     | ServerEvent msg -> 
         match msg with 
         | CharacterPositionUpdate (id, x, y) ->
             if id <> clientId then
                 processNewCoords (x, y)
-        | _ -> ()
+            true
+        | _ -> true
 
 let consoleEventSource = DarkMadness2.Core.EventSource.SyncEventSourceWrapper (fun () -> System.Console.ReadKey true) 
 
@@ -77,11 +81,33 @@ let eventSource =
         | Choice2Of2 keyInfo -> ClientEvent keyInfo.Key
     )
 
-Event.add processEvent eventSource
+type Locker () =
+    let autoResetEvent = new System.Threading.AutoResetEvent false
+    
+    member this.Down () =
+        autoResetEvent.Set () |> ignore
 
-eventSource 
-    |> listenUntil (
-        function 
-        | ClientEvent key -> key =System.ConsoleKey.Escape
-        | _ -> false
-        )
+    member this.Wait () =
+        autoResetEvent.WaitOne () |> ignore
+
+type EventDispatcher<'a> (locker : Locker) =
+    let eventBuffer = System.Collections.Generic.Queue<_> ()
+
+    member this.Listener event = 
+        eventBuffer.Enqueue event
+        locker.Down ()
+
+    member this.GetEvent () = eventBuffer.Dequeue ()
+
+let eventLoop (handleEvent : 'a -> bool) (event : IEvent<'a>) =
+    let locker = Locker ()
+    let dispatcher = EventDispatcher locker
+    event.Add <| dispatcher.Listener
+    let rec doLoop () =
+        locker.Wait ()
+        let event = dispatcher.GetEvent ()
+        if handleEvent event then
+            doLoop ()
+    doLoop ()
+
+eventSource |> eventLoop processEvent

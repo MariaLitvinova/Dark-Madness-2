@@ -26,5 +26,5 @@ module EventSourceUtils =
         let handler = new Handler<'a> (fun _ x -> if f x then stop := true)
         event.AddHandler handler
         while not !stop do
-            ()
+            System.Threading.Thread.Sleep 100
         event.RemoveHandler handler
