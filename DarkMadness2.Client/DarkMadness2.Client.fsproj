@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Console.fs" />
+    <Compile Include="Event.fs" />
+    <Compile Include="EventSources.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>

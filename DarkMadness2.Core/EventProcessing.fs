@@ -9,11 +9,8 @@ type private EventDispatcher<'a> (locker : System.Threading.AutoResetEvent) =
 
     member this.GetEvent () = eventBuffer.Dequeue ()
 
-
 module EventProcessing =
     
-    open DarkMadness2.Core.EventSource
-
     let eventLoop (handleEvent : 'a -> bool) (event : IEvent<'a>) =
         let locker = new System.Threading.AutoResetEvent false
         let dispatcher = EventDispatcher locker
@@ -34,4 +31,4 @@ module EventProcessing =
         eventLoop handler source
         (!buffer).Value
 
-    let receive (source : IEventSource<'a>) = receiveFromEvent source.Event
+    let receive (source : DarkMadness2.Core.EventSource.IEventSource<'a>) = receiveFromEvent source.Event
