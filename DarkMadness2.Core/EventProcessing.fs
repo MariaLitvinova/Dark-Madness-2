@@ -1,34 +1,57 @@
 ﻿namespace DarkMadness2.Core
 
-type private EventDispatcher<'a> (locker : System.Threading.AutoResetEvent) =
+/// Listens for events from producer thread, queues them and provides them to a consumer thread.
+/// Used for multithreaded event passing.
+type private EventDispatcher<'a> () =
+    
+    /// Queue for incoming events.
     let eventBuffer = System.Collections.Generic.Queue<_> ()
 
+    /// Thread synchronizer.
+    let locker = new System.Threading.AutoResetEvent false
+
+    /// Receives incoming events from producer and puts them to a queue.
     member this.Listener (event : 'a) = 
+        System.Threading.Monitor.Enter eventBuffer
         eventBuffer.Enqueue event
         locker.Set () |> ignore
+        System.Threading.Monitor.Exit eventBuffer
 
-    member this.GetEvent () = eventBuffer.Dequeue ()
+    /// Returns queued events to consumer, if any, otherwise blocks until new events arrive.
+    member this.GetEvent () = 
+        // Block consumer thread until Listener gets called by producer.
+        locker.WaitOne () |> ignore
+        System.Threading.Monitor.Enter eventBuffer
+        let result = eventBuffer.Dequeue ()
+        if eventBuffer.Count > 0 then
+            // If there are queued events, unblock right now.
+            locker.Set () |> ignore
+        System.Threading.Monitor.Exit eventBuffer
+        result
 
+/// Helper functions related to event processing.
 module EventProcessing =
     
+    /// Event loop, listens for events from given source and calls given handler for every event, until handler returns false.
     let eventLoop (handleEvent : 'a -> bool) (event : IEvent<'a>) =
-        let locker = new System.Threading.AutoResetEvent false
-        let dispatcher = EventDispatcher locker
-        event.Add  <| dispatcher.Listener
+        let dispatcher = EventDispatcher ()
+        let handler = new Handler<_> (fun _ event -> dispatcher.Listener event)
+        event.AddHandler handler
         let rec doLoop () =
-            locker.WaitOne () |> ignore
             let event = dispatcher.GetEvent ()
             if handleEvent event then
                 doLoop ()
-        doLoop () 
+        doLoop ()
+        event.RemoveHandler handler
 
+    /// Receive data from a single event. Blocks calling thread until event occurs, then returns its payload.
     let receiveFromEvent (source : IEvent<'a>) =
         let buffer = ref None
-        let handler = new Handler<'a> (fun _ x -> buffer := Some x)
         let handler event =
             buffer := Some event
             false
         eventLoop handler source
         (!buffer).Value
 
+    /// Helper that receives data from single event. Blocks calling thread until event occurs, then returns its payload.
     let receive (source : DarkMadness2.Core.EventSource.IEventSource<'a>) = receiveFromEvent source.Event
