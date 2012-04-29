@@ -1,5 +1,7 @@
-﻿module DarkMadness2.NetworkCommunication.Serializer
+﻿/// Serializes and deserializes data transfer objects.
+module DarkMadness2.NetworkCommunication.Serializer
 
+/// Serialize data transfer object into string.
 let serialize msg =
     match msg with
     | ConnectionRequest -> "ConnectionRequest"
@@ -7,6 +9,7 @@ let serialize msg =
     | CharacterMoveRequest (x, y) -> "CharacterMoveRequest " + string x + " " + string y
     | CharacterPositionUpdate (id, x, y) -> "CharacterPositionUpdate " + string id + " " + string x + " " + string y 
 
+/// Deserialize data transfer object from string.
 let deserialize (msg : string) =
     let messageParts = msg.Split [|' '|] |> List.ofArray
     match messageParts with
