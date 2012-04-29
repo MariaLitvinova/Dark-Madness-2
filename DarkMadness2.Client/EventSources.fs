@@ -9,12 +9,12 @@ module EventSources =
 
     let private consoleEventSource = SyncEventSourceWrapper (fun () -> System.Console.ReadKey true) 
 
-    let private eventSource (communicator : IEventSource<_>) = 
-        combine (event communicator) (event consoleEventSource) (
+    let private eventSource (serverEvent : IEvent<_>) = 
+        combine serverEvent consoleEventSource.Event (
             function
             | Choice1Of2 messageFromServer -> ServerEvent (messageFromServer |> deserialize)
             | Choice2Of2 keyInfo -> ClientEvent keyInfo.Key
         )
 
-    let startEventLoop (eventHandler : Event -> bool) (communicator : IEventSource<_>) =
-        eventSource communicator |> eventLoop eventHandler
+    let startEventLoop (eventHandler : Event -> bool) (serverEvent : IEvent<_>) =
+        eventSource serverEvent |> eventLoop eventHandler

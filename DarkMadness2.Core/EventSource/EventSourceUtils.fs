@@ -11,6 +11,3 @@ module EventSourceUtils =
         source1.Add (Choice1Of2 >> combineFunction >> result.Trigger)
         source2.Add (Choice2Of2 >> combineFunction >> result.Trigger)
         result.Publish
-
-    /// Convenience function used to return event for given event source.
-    let event (source : IEventSource<'a>) = source.Event

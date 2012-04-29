@@ -43,7 +43,7 @@ module Main =
 
     // Connecting to server...
     communicator.Send <| serialize ConnectionRequest
-    let response = receive communicator |> deserialize
+    let response = receive communicator.ServerEvent |> deserialize
     match response with 
     | ConnectionResponse id -> clientId <- id
     | _ -> failwith "Connection failed"
@@ -69,4 +69,4 @@ module Main =
                 true
             | _ -> true
 
-    EventSources.startEventLoop processEvent communicator
+    EventSources.startEventLoop processEvent communicator.ServerEvent

@@ -19,8 +19,6 @@ type SyncEventSourceWrapper<'a> (eventProducer : unit -> 'a) =
     do thread.IsBackground <- true
     do thread.Start ()
 
-    interface IEventSource<'a> with
-
-        /// Event that is triggered when wrapped function returns.
-        member this.Event = event.Publish
+    /// Event that is triggered when wrapped function returns.
+    member this.Event = event.Publish
 

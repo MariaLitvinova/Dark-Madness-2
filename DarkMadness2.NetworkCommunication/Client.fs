@@ -17,6 +17,4 @@ type Client (host, port) =
 
     member this.Send (str : string) = writer.WriteLine str
 
-    interface DarkMadness2.Core.EventSource.IEventSource<string> with
-        
-        member this.Event = DarkMadness2.Core.EventSource.EventSourceUtils.event eventSource
+    member this.ServerEvent = eventSource.Event

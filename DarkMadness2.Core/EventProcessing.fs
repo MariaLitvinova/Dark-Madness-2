@@ -45,7 +45,7 @@ module EventProcessing =
         event.RemoveHandler handler
 
     /// Receive data from a single event. Blocks calling thread until event occurs, then returns its payload.
-    let receiveFromEvent (source : IEvent<'a>) =
+    let receiveFromEvent (source : IEvent<_>) =
         let buffer = ref None
         let handler event =
             buffer := Some event
@@ -54,4 +54,4 @@ module EventProcessing =
         (!buffer).Value
 
     /// Helper that receives data from single event. Blocks calling thread until event occurs, then returns its payload.
-    let receive (source : DarkMadness2.Core.EventSource.IEventSource<'a>) = receiveFromEvent source.Event
+    let receive (event : IEvent<_>) = receiveFromEvent event
