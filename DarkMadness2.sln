@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DarkMadness2.Client", "DarkMadness2.Client\DarkMadness2.Client.fsproj", "{36AF659F-D47E-45B7-B27C-5112C2867731}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DarkMadness2.Server", "DarkMadness2.Server\DarkMadness2.Server.fsproj", "{0AF3EA44-C4FB-49BE-959E-78C0A913B33D}"
