@@ -46,6 +46,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameMap.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>

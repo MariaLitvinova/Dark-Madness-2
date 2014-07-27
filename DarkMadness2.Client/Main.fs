@@ -52,17 +52,26 @@ let processNewCoords coords =
 // maximizeWindow ()
 hideCursor ()
 
+let mutable otherPlayerPosition = (-1, -1)
+
 // Connecting to server...
-communicator.Send <| serialize ConnectionRequest
+communicator.Send <| serialize (ConnectionRequest charPosition)
 let response = receive communicator.ServerEvent |> deserialize
 match response with 
-| ConnectionResponse id -> clientId <- id
+| ConnectionResponse (id, receivedOtherPlayerX, receivedOtherPlayerY) -> 
+    clientId <- id
+    otherPlayerPosition <- (receivedOtherPlayerX, receivedOtherPlayerY)
 | _ -> failwith "Connection failed"
 
 System.Console.Title <- sprintf "Dark Madness 2 {Connected, client id = %d}" clientId
 
 // Done.
 putChar '@' charPosition
+
+/// Placing other character, if exists.
+if (otherPlayerPosition <> (-1, -1)) then
+    putChar '@' otherPlayerPosition
+    otherCharPosition <- otherPlayerPosition
 
 CharacterMoveRequest charPosition |> serialize |> communicator.Send
 
